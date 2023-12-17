@@ -514,6 +514,23 @@
     ]
   },
   {
+    "name": "C&C Message in Checkout",
+    "settings": [
+      {
+        "type": "text",
+        "id": "cc_message_in_checkout_heading",
+        "label": "Heading",
+        "default": "Looking to Click & Collect?"
+      },
+      {
+        "type": "richtext",
+        "id": "cc_message_in_checkout_description",
+        "label": "Description",
+        "default": "You’ll be able select this in the next step. Fill out your contact details below, and hit ‘Continue to Shipping’"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.cart.name",
     "settings": [
       {
