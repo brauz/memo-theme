@@ -1,0 +1,484 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'component-loading-overlay.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'pd-cart.js' | asset_url }}" defer="defer"></script>
+
+<div id="main-cart-items-wrapper" class="pd-cart page-width{% if cart == empty %} is-empty{% endif %}" data-id="{{ section.id }}">
+  {%- render 'pd-cart__empty' -%}
+
+  <div class="pd-shopping-cart-title title-wrapper-with-link">
+    <h1 class="title title--primary">{{ section.settings.cart_title }}</h1>
+  </div>
+
+  {% if cart != empty %}
+    {%- render 'pd-cart__discount-notification',
+      feel_good_notification_padding: section.settings.feel_good_notification_padding,
+      welcome_bg_color: settings.welcome_bg_color,
+      welcome_text_color: settings.welcome_text_color,
+      little_tier_bg_color: settings.little_tier_bg_color,
+      little_tier_text_color: settings.little_tier_text_color,
+      big_tier_bg_color: settings.big_tier_bg_color,
+      big_tier_text_color: settings.big_tier_text_color,
+      huge_tier_bg_color: settings.huge_tier_bg_color,
+      huge_tier_text_color: settings.huge_tier_text_color,
+      use_promos_bg_color: settings.use_promos_bg_color,
+      use_promos_text_color: settings.use_promos_text_color,
+      color: settings.color
+    -%}
+  {% endif  %}
+
+  <div id="cart-shipping-notification-mobile" data-id="{{ section.id }}" class="hide-desktop-and-up{% if cart == empty %} d-none{% endif %}">
+    {%- render 'pd-cart__shipping-notification', showDivider: false, class: 'cart__shipping-notification hide-desktop-and-up' -%}
+    <br class="hide-desktop-and-up">
+  </div>
+
+  <div class="pd-cart-wrapper">
+    <aside>
+      {%- render 'pd-cart__product-gwp', cart: cart -%}
+
+      {%- render 'pd-cart__items' -%}
+
+      {% if section.settings.show_complementary_section %}
+        {%- render 'pd-cart__product-recommendation', section: section -%}
+      {% endif %}
+    </aside>
+    <aside class="cart__footer py-20" id="main-cart-footer" data-id="{{ section.id }}">
+      <div class="cart__blocks">
+        {%- render 'pd-cart__shipping-notification', showDivider: true, class: 'cart__shipping-notification hide-tablet-and-down' -%}
+
+        {%- render 'pd-cart__cart-note' -%}
+
+        <div class="pd-sticky-bar__trigger-point" style="min-height: 150px;">
+          <section class="pd-sticky-bar">
+            <div class="js-contents-total">
+              <div class="totals">
+                <h2 class="totals__subtotal">{{ 'sections.cart.subtotal' | t }}</h2>
+                <p class="totals__subtotal-value">{{ cart.total_price | money_with_currency }}</p>
+              </div>
+              {%- if cart.total_discount > 0 and section.settings.show_cart_total_disount -%}
+                <div aria-label="{{ 'customer.order.discount' | t }}">
+                  <ul class="discounts list-unstyled" role="list">
+                    <li class="discounts__discount discounts__discount--position totals">
+                      <div class="totals__subtotal">Discount</div>
+                      <p class="totals__subtotal-value">Saving {{ cart.total_discount | money }}</p>
+                    </li>
+                  </ul>
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="divider"></div>
+            {% comment %}
+            <img id="brauz-shopify-cart-change-listener" src="" style="display: none;" onload="window.Brauz_shopify_helper_setupFindInStoreComponentInCart()" onerror="window.Brauz_shopify_helper_setupFindInStoreComponentInCart()"></img>
+            <div
+              id="brauz-click-and-collect-config-cart-page"
+              data-sd="{{ shop.permanent_domain }}"
+              style="display: none; width: 0"
+            ></div>
+            <div id="brauz-click-and-collect-cart-page"></div>
+            <script src="https://d3aq2u4yw77ivo.cloudfront.net/find-in-store/shopify/thememo/find-in-store.shopify.thememo.prod.js" async></script>
+            {% endcomment %}
+            <div class="cart__ctas px-20">
+              <noscript>
+                <button type="submit" class="cart__update-button button button--secondary" form="cart">
+                  {{ 'sections.cart.update' | t }}
+                </button>
+              </noscript>
+              <button
+                type="submit"
+                id="checkout"
+                class="cart__checkout-button pd-button pd-button--lively-blue"
+                name="checkout"
+                {% if cart == empty %}
+                  disabled
+                {% endif %}
+                form="cart"
+              >
+                {{ 'sections.cart.checkout' | t }}
+              </button>
+            </div>
+
+            <small class="tax-note caption-large rte">
+              {{ section.settings.cart_tax_note }}
+              {% comment %}
+                {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+                  {{ 'sections.cart.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                {%- elsif cart.taxes_included -%}
+                  {{ 'sections.cart.taxes_included_but_shipping_at_checkout' | t }}
+                {%- elsif shop.shipping_policy.body != blank -%}
+                  {{ 'sections.cart.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+                {%- else -%}
+                  {{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}
+                {%- endif -%}
+              {% endcomment %}
+            </small>
+          </section>
+        </div>
+        <div style="display: flex; justify-content: center;margin-top: 1.2rem;">
+          <a href="{{ settings.continue_shopping_link }}" class="underlined-link pd-button-continue-shopping">
+            {{- 'general.continue_shopping' | t -}}
+          </a>
+        </div>
+        <br>
+        <br>
+        {%- render 'pd-cart__payment-method' -%}
+
+        {% comment %}
+          {% if additional_checkout_buttons %}
+            <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+              {{ content_for_additional_checkout_buttons }}
+            </div>
+          {% endif %}
+        {% endcomment %}
+
+        <div id="cart-errors" class="px-20"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-items.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text and section toggling"
+    },
+    {
+      "type": "text",
+      "id": "cart_empty_message",
+      "label": "Message for empty cart",
+      "default": "Your cart is empty"
+    },
+    {
+      "type": "text",
+      "id": "cart_title",
+      "label": "Cart title",
+      "default": "Your shopping cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_show_payment_method",
+      "label": "Show Payment Methods",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_note",
+      "label": "t:settings_schema.cart.settings.show_cart_note.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_total_disount",
+      "label": "Show cart total discount",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cart_note_title",
+      "label": "Cart Note - Title",
+      "default": "Write a feel good message"
+    },
+    {
+      "type": "text",
+      "id": "cart_note_placeholder",
+      "label": "Cart Note - Placeholder",
+      "default": "Add a gift message (up to 280 characters)"
+    },
+    {
+      "type": "select",
+      "id": "cart_note_default_state",
+      "label": "Cart Note - Default state",
+      "options": [
+        {
+          "value": "true",
+          "label": "Open"
+        },
+        {
+          "value": "false",
+          "label": "Closed"
+        }
+      ],
+      "default": "false"
+    },
+    {
+      "type": "text",
+      "id": "cart_tax_note",
+      "label": "Tax note",
+      "default": "Shipping & promotions calculated at checkout"
+    },
+
+    {
+      "type": "header",
+      "content": "Feel good notification"
+    },
+    {
+      "type": "paragraph",
+      "content": "Membership message colors are customized on Theme settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_feel_good_notification",
+      "label": "Show Feed Good Notification",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "feel_good_notification_padding",
+      "label": "Feel good notification padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "User is not logged in"
+    },
+    {
+      "type": "text",
+      "id": "feelfoodnotification_notification__user-not-loggedin__title",
+      "label": "Heading",
+      "default": "The Feel Good Club"
+    },
+    {
+      "type": "richtext",
+      "id": "feelfoodnotification_notification__user-not-loggedin__description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "User is a tier-little member"
+    },
+    {
+      "type": "text",
+      "id": "tags_feelfoodnotification_user-tier-little__title",
+      "label": "Heading",
+      "default": "Little tier access",
+      "info": "If left blank, data will be taken from Loyalty/Tier:Little heading"
+    },
+    {
+      "type": "richtext",
+      "id": "tags_feelfoodnotification_user-tier-little__description",
+      "label": "Description",
+      "info": "If left blank, data will be taken from Loyalty/Tier:Little description"
+    },
+    {
+      "type": "header",
+      "content": "User is a tier-big member"
+    },
+    {
+      "type": "text",
+      "id": "tags_feelfoodnotification_user-tier-big__title",
+      "label": "Heading",
+      "default": "big tier access",
+      "info": "If left blank, data will be taken from Loyalty/Tier:Big heading"
+    },
+    {
+      "type": "richtext",
+      "id": "tags_feelfoodnotification_user-tier-big__description",
+      "label": "Description",
+      "info": "If left blank, data will be taken from Loyalty/Tier:Big description"
+    },
+    {
+      "type": "header",
+      "content": "User is a tier-huge member"
+    },
+    {
+      "type": "text",
+      "id": "tags_feelfoodnotification_user-tier-huge__title",
+      "label": "Heading",
+      "default": "Huge tier access",
+      "info": "If left blank, data will be taken from Loyalty/Tier:Huge heading"
+    },
+    {
+      "type": "richtext",
+      "id": "tags_feelfoodnotification_user-tier-huge__description",
+      "label": "Description",
+      "info": "If left blank, data will be taken from Loyalty/Tier:Huge description"
+    },
+    {
+      "type": "header",
+      "content": "User has used promos"
+    },
+    {
+      "type": "text",
+      "id": "tags_feelfoodnotification_user-used-promos__title",
+      "label": "Heading",
+      "default": "The Feel Good Club",
+      "info": "If left blank, data will be taken from Loyalty/Use-promos heading"
+    },
+    {
+      "type": "richtext",
+      "id": "tags_feelfoodnotification_user-used-promos__description",
+      "label": "Description",
+      "info": "If left blank, data will be taken from Loyalty/Use-promos description"
+    },
+    {
+      "type": "header",
+      "content": "Discount Badge"
+    },
+    {
+      "type": "paragraph",
+      "content": "Discount Badge or Spend-and-save Badge will be displayed based on the Shopify script (please refer to the Script editor app)"
+    },
+    {
+      "type": "header",
+      "content": "Complementary section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_complementary_section",
+      "label": "Show Complementary section",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "default_state_complementary_section",
+      "label": "Default state for Complementary section",
+      "options": [
+        {
+          "value": "true",
+          "label": "Open"
+        },
+        {
+          "value": "false",
+          "label": "Closed"
+        }
+      ],
+      "default": "true"
+    },
+    {
+      "type": "text",
+      "id": "complementary_section_title",
+      "label": "Complementary section title",
+      "default": "Popular Essentials"
+    },
+    {
+      "type": "collection", 
+      "id": "recommendationCollection",
+      "label": "Select Collection to display into Popular Essentials section"
+    },
+    {
+      "type": "range",
+      "id": "recommendationCollectionLimit",
+      "label": "Number of products to show",
+      "default": 10,
+      "min": 1,
+      "max": 20,
+      "step": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrow",
+      "default": true,
+      "label": "Show arrow on carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ss_recs",
+      "label": "Use Searchspring Recommendations",
+      "default": true,
+      "info": "If enabled, the complementary section will be replaced by Searchspring Recommendations and ignore the settings related to the carousel"
+    },
+    {
+      "type": "header",
+      "content": "Card product settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "default": true,
+      "label": "Show quick add action"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_secondary_image",
+      "default": false,
+      "label": "Hide second image on hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_vendor",
+      "default": false,
+      "label": "Hide vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_rating",
+      "default": true,
+      "label": "Hide product rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_swatch",
+      "label": "Hide swatch",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "gwp",
+      "name": "GWP campaign",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "checkbox",
+          "id": "gwp_with_purchase_enable",
+          "label": "Enable automatic gift with purchase",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "gwp_with_purchase_enable_member_only",
+          "label": "Enable member only",
+          "default": false
+        },
+        {
+          "type": "number",
+          "id": "gwp_with_purchase_minimum_threshold",
+          "label": "Minimum spend threshold"
+        },
+        {
+          "type": "collection",
+          "id": "gwp_with_purchase_applicable_collection",
+          "label": "Collection of GWP APPLICABLE item"
+        },
+        {
+          "type": "collection",
+          "id": "gwp_with_purchase_reward_collection",
+          "label": "Collection of GWP REWARD/GIFT item",
+          "info": "Collection of zero price product"
+        },
+        {
+          "type": "collection",
+          "id": "gwp_with_purchase_excluded_collection",
+          "label": "Collection of GWP excluded item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
