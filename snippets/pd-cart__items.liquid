@@ -136,14 +136,14 @@
                   {% comment %}End Preorder line-item{% endcomment %}
 
                   {% comment %} Start No Delivery Check {% endcomment %}
-                    {% if item.variant.metafields.custom.no_delivery %}
+                    <!-- {% if item.variant.metafields.custom.no_delivery %}
                       {% assign no_delivery = true %}
                       <div>
                         <span style="margin-top: 10px;" class="pd-product-badge">
                           {{ settings.nodelivery_text }}
                         </span>
                       </div>
-                    {% endif %}
+                    {% endif %} -->
 
                     {% if settings.show_no_pickup_delivery_tag %}
                       {% for tag in item.product.tags %}
