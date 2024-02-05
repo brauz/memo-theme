@@ -531,6 +531,17 @@
     ]
   },
   {
+    "name": "Mixed order msg in Checkout",
+    "settings": [
+      {
+        "type": "richtext",
+        "id": "mixed_order_message_in_checkout_description",
+        "label": "Description",
+        "default": "You have a mix of items in your cart that are only available for pick up and only available for delivery. We suggest you place separate orders for pick up and delivery items."
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.cart.name",
     "settings": [
       {
