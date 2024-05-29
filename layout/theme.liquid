@@ -165,5 +165,16 @@
         </script>
       {% endif %}
     {% endif %}
+
+    <script>
+      const script = document.createElement("script");
+      script.setAttribute("type", "text/javascript");
+      script.setAttribute("src", "https://d3aq2u4yw77ivo.cloudfront.net/retailer-appointment/thememo/curbside-pickup.prod.js");
+      script.setAttribute("async", true);
+      document.body.appendChild(script);
+      script.onload = function(){
+        window.Brauz.initializeBrauzBookAStylist("THEMEMO");
+      };
+    </script>
   </body>
 </html>
