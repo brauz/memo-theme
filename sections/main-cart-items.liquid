@@ -6,12 +6,39 @@
 {{ 'component-loading-overlay.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'pd-cart.js' | asset_url }}" defer="defer"></script>
 
+<style>
+  #main-cart-items.loading {
+    height: 420px;
+    overflow: hidden;
+  }
+
+  #main-cart-items.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: white;
+    z-index: 2;
+  }
+
+  #main-cart-items.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: 80px;
+    height: 80px;
+    background: url("data:image/svg+xml,{% render 'icon-spinner-encoded' %}") no-repeat;
+    background-size: 100% 100%;
+  }
+</style>
+
 <div id="main-cart-items-wrapper" class="pd-cart page-width{% if cart == empty %} is-empty{% endif %}" data-id="{{ section.id }}">
   {%- render 'pd-cart__empty' -%}
-
-  <div class="pd-shopping-cart-title title-wrapper-with-link">
-    <h1 class="title title--primary">{{ section.settings.cart_title }}</h1>
-  </div>
 
   {% if cart != empty %}
     {%- render 'pd-cart__discount-notification',
@@ -30,9 +57,13 @@
     -%}
   {% endif  %}
 
-  <div id="cart-shipping-notification-mobile" data-id="{{ section.id }}" class="hide-desktop-and-up{% if cart == empty %} d-none{% endif %}">
-    {%- render 'pd-cart__shipping-notification', showDivider: false, class: 'cart__shipping-notification hide-desktop-and-up' -%}
-    <br class="hide-desktop-and-up">
+  <div class="cart__header hide-desktop-and-up{% if cart == empty %} d-none{% endif %}">
+    <div class="pd-shopping-cart-title title-wrapper-with-link">
+      <h1 class="title title--primary">{{ section.settings.cart_title }}</h1>
+    </div>
+    <div id="cart-shipping-notification-mobile" data-id="{{ section.id }}">
+      {%- render 'pd-cart__shipping-notification', showDivider: false, class: 'cart__shipping-notification hide-desktop-and-up' -%}
+    </div>
   </div>
 
   <div class="pd-cart-wrapper">
@@ -45,8 +76,9 @@
         {%- render 'pd-cart__product-recommendation', section: section -%}
       {% endif %}
     </aside>
-    <aside class="cart__footer py-20" id="main-cart-footer" data-id="{{ section.id }}">
+    <aside class="cart__footer" id="main-cart-footer" data-id="{{ section.id }}">
       <div class="cart__blocks">
+        <h2 class="title title--primary hide-tablet-and-down">{{ section.settings.cart_title }}</h2>
         {%- render 'pd-cart__shipping-notification', showDivider: true, class: 'cart__shipping-notification hide-tablet-and-down' -%}
 
         {%- render 'pd-cart__cart-note' -%}
@@ -56,7 +88,7 @@
             <div class="js-contents-total">
               <div class="totals">
                 <h2 class="totals__subtotal">{{ 'sections.cart.subtotal' | t }}</h2>
-                <p class="totals__subtotal-value">{{ cart.total_price | money_with_currency }}</p>
+                <p class="totals__subtotal-value">{{ cart.total_price | money }}</p>
               </div>
               {%- if cart.total_discount > 0 and section.settings.show_cart_total_disount -%}
                 <div aria-label="{{ 'customer.order.discount' | t }}">
@@ -68,9 +100,22 @@
                   </ul>
                 </div>
               {%- endif -%}
+              <div class="hide-desktop-and-up">
+                <ul class="discounts list-unstyled" role="list">
+                  <li class="discounts__discount discounts__discount--position totals cart__header">
+                    <div class="totals__subtotal">Delivery</div>
+                    <div class="totals__subtotal-value">
+                      <div id="cart-shipping-notification-mobile" data-id="{{ section.id }}">
+                        {%- render 'pd-cart__shipping-notification', showDivider: false, class: 'cart__shipping-notification hide-desktop-and-up' -%}
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div class="divider"></div>
+            {% if settings.enable_brauz == true %}
             <img id="brauz-shopify-cart-change-listener" src="" style="display: none;" onload="window.Brauz_shopify_helper_setupFindInStoreComponentInCart()" onerror="window.Brauz_shopify_helper_setupFindInStoreComponentInCart()"></img>
             <div
               id="brauz-click-and-collect-config-cart-page"
@@ -79,6 +124,7 @@
             ></div>
             <div id="brauz-click-and-collect-cart-page"></div>
             <script src="https://d3aq2u4yw77ivo.cloudfront.net/find-in-store/shopify/thememo/find-in-store.shopify.thememo.prod.js" async></script>
+            {% endif %}
             <div class="cart__ctas px-20">
               <noscript>
                 <button type="submit" class="cart__update-button button button--secondary" form="cart">
