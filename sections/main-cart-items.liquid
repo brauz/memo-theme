@@ -124,6 +124,9 @@
             ></div>
             <div id="brauz-click-and-collect-cart-page"></div>
             <script src="https://d3aq2u4yw77ivo.cloudfront.net/find-in-store/shopify/thememo/find-in-store.shopify.thememo.prod.js" async></script>
+            <div cart-no-cc-available-message="{{ shop.metafields.globals.cc_not_available_message }}"></div>
+            <div cart-delivery-not-available-message="{{ shop.metafields.globals.delivery_not_available_message }}"></div>
+            <div cart-mixed-cart-message="{{ shop.metafields.globals.mixed_cart_message }}"></div>
             {% endif %}
             <div class="cart__ctas px-20">
               <noscript>
