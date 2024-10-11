@@ -70,7 +70,7 @@
     <aside>
       {%- render 'pd-cart__product-gwp', cart: cart -%}
 
-      {%- render 'pd-cart__items' -%}
+      {%- render 'pd-cart__items', section: section -%}
 
       {% if section.settings.show_complementary_section %}
         {%- render 'pd-cart__product-recommendation', section: section -%}
@@ -79,12 +79,18 @@
     <aside class="cart__footer" id="main-cart-footer" data-id="{{ section.id }}">
       <div class="cart__blocks">
         <h2 class="title title--primary hide-tablet-and-down">{{ section.settings.cart_title }}</h2>
+        <div id="gifting-drawer-wrapper" class="gifting-drawer-wrapper">
+          {% render 'pd-gifting-drawer', prefix: 'desktop' %}
+        </div>
         {%- render 'pd-cart__shipping-notification', showDivider: true, class: 'cart__shipping-notification hide-tablet-and-down' -%}
-
-        {%- render 'pd-cart__cart-note' -%}
 
         <div class="pd-sticky-bar__trigger-point" style="min-height: 150px;">
           <section class="pd-sticky-bar">
+            <div class="hide-desktop-and-up">
+              <div id="gifting-drawer-wrapper-cart-sticky" class="gifting-drawer-wrapper">
+                {% render 'pd-gifting-drawer', prefix: 'mobile' %}
+              </div>
+            </div>
             <div class="js-contents-total">
               <div class="totals">
                 <h2 class="totals__subtotal">{{ 'sections.cart.subtotal' | t }}</h2>
@@ -206,6 +212,12 @@
       "id": "cart_title",
       "label": "Cart title",
       "default": "Your shopping cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gifting_drawer",
+      "label": "Show gifting drawer",
+      "default": true
     },
     {
       "type": "checkbox",
@@ -414,7 +426,7 @@
       "default": "Popular Essentials"
     },
     {
-      "type": "collection", 
+      "type": "collection",
       "id": "recommendationCollection",
       "label": "Select Collection to display into Popular Essentials section"
     },
@@ -524,6 +536,28 @@
           "id": "gwp_with_purchase_excluded_collection",
           "label": "Collection of GWP excluded item"
         }
+      ]
+    },
+    {
+      "type": "gift_box",
+      "name": "Gift Box",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    },
+    {
+      "type": "greeting_card",
+      "name": "Greeting card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
       ]
     }
   ]
