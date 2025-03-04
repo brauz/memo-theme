@@ -1,0 +1,25 @@
+{% comment %}
+  - product - product object
+  - show_quick_view - boolean
+{% endcomment %}
+
+<div id="ProductButtons" class="product-buttons {% if show_quick_view %} product-buttons--quick-view{% endif %}">
+ 
+  {% if product.tags contains 'no-giftreg' %}
+    {% assign is_no_giftreg = true %}
+  {% endif %}
+
+  <div class="product-buttons__button product-buttons__button--wishlist">
+    {% render 'add-to-lists-button', product_data: product %}
+  </div>
+
+  {% if customer.tags contains 'Registry-Owner' and is_no_giftreg != true %}
+    <div class="product-buttons__button product-buttons__button--registry-add registry-add">
+      {% render 'add-to-registry-button', product_data: product %}
+    </div>
+  {% endif %}
+
+  {% unless show_quick_view %}
+    <div id="ProductButtonsLoading" class="loading-state hidden">{% render 'icon.svg', type: 'spinner' %}</div>
+  {% endunless %}
+</div>
