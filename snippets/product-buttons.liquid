@@ -13,6 +13,10 @@
     {% render 'add-to-lists-button', product_data: product %}
   </div>
 
+  <div class="product-buttons__button">
+    {% render 'find-in-store-button' %}
+  </div>
+
   {% if customer.tags contains 'Registry-Owner' and is_no_giftreg != true %}
     <div class="product-buttons__button product-buttons__button--registry-add registry-add">
       {% render 'add-to-registry-button', product_data: product %}
